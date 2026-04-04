@@ -1,75 +1,47 @@
-# Nuxt Minimal Starter
+# ScopeX
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+ScopeX is a Nuxt app that helps estimate design project cost, generate a breakdown of services, and export a client-ready commercial proposal as PDF.
 
 ## Setup
 
-Make sure to install dependencies:
+Install dependencies:
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
+## Development
 
-Start the development server on `http://localhost:3000`:
+Start the dev server:
 
 ```bash
-# npm
 npm run dev
+```
 
-# pnpm
-pnpm dev
+## Checks
 
-# yarn
-yarn dev
+Run linting:
 
-# bun
-bun run dev
+```bash
+npm run lint
+```
+
+Run typecheck:
+
+```bash
+npm run typecheck
+```
+
+Run tests:
+
+```bash
+npm run test:run
 ```
 
 ## Production
 
-Build the application for production:
+Build the app:
 
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
