@@ -2,7 +2,7 @@
   <div class="bg-[var(--bg-page)] flex flex-col min-h-screen">
 
     <!-- Хедер -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-[var(--bg-surface)] border-b border-[var(--border-default)] h-[60px] flex items-center">
+    <header class="sticky top-0 z-50 bg-[var(--bg-surface)] border-b border-[var(--border-default)] h-[60px] flex items-center">
       <div class="w-full flex justify-between items-center px-4 sm:px-6 md:pl-8 md:pr-10 lg:px-12">
         <NuxtLink to="/" class="text-lg font-semibold text-[var(--text-primary)]">Scope<span class="text-[var(--text-tertiary)]">X</span></NuxtLink>
 
@@ -29,7 +29,7 @@
     </header>
 
     <!-- Контент -->
-    <main class="flex-1 pt-[60px]">
+    <main class="flex-1">
       <slot />
     </main>
 
