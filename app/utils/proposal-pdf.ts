@@ -16,6 +16,39 @@ const PROJECT_TYPE_LABELS: Record<string, string> = {
   branding: 'Брендинг',
 }
 
+// ─── PDF color palette (mirrors CSS token values for light mode) ─────────────
+const C = {
+  // Structural dark blocks
+  inverse:        '#111827',  // --bg-inverse (light)
+  inverseSurface: '#1f2937',  // meta cards inside dark block
+  inverseBorder:  '#374151',  // borders inside dark block
+  onInverse:      '#ffffff',  // --text-on-inverse (light)
+  mutedOnInverse: '#6b7280',  // muted labels on dark background
+
+  // Light surfaces
+  pageBg:         '#f9fafb',  // --bg-page (light)
+  surface:        '#ffffff',  // --bg-surface (light)
+  surfaceRaised:  '#f3f4f6',  // --bg-surface-raised (light)
+  borderDefault:  '#e5e7eb',  // --border-default (light)
+
+  // Text
+  textPrimary:    '#111827',  // --text-primary (light)
+  textSecondary:  '#4b5563',  // --text-secondary (light)
+  textTertiary:   '#9ca3af',  // --text-tertiary (light)
+
+  // Accent — purple
+  accentBg:           '#7c3aed',  // --accent-bg (--purple-600)
+  accentOn:           '#ffffff',  // --accent-on
+  accentSubtleBg:     '#ede9fe',  // --accent-subtle-bg (--purple-100)
+  accentSubtleBorder: '#a78bfa',  // --accent-subtle-border (--purple-400)
+  accentSubtleOn:     '#5b21b6',  // --accent-subtle-on (--purple-800)
+
+  warningBg:          '#fff7ed',  // --warning-bg
+  warningBorder:      '#fdba74',  // --warning-border
+  warningText:        '#f97316',  // --warning-text
+  warningOn:          '#c2410c',  // --warning-on
+} as const
+
 type RgbColor = ReturnType<typeof rgb>
 
 type PdfContext = {
@@ -200,32 +233,32 @@ function drawPill(page: PDFPage, text: string, x: number, topY: number, options:
 }
 
 function drawMetaCard(page: PDFPage, x: number, y: number, width: number, height: number, label: string, value: string, ctx: PdfContext) {
-  drawRoundedRect(page, x, y, width, height, 12, hex('#1f2937'), hex('#374151'))
+  drawRoundedRect(page, x, y, width, height, 12, hex(C.inverseSurface), hex(C.inverseBorder))
   page.drawText(label.toUpperCase(), {
     x: x + 18,
     y: y + height - 26,
     size: 10,
     font: ctx.normalFont,
-    color: hex('#6b7280'),
+    color: hex(C.mutedOnInverse),
   })
   page.drawText(value, {
     x: x + 18,
     y: y + 16,
     size: 18,
     font: ctx.boldFont,
-    color: hex('#ffffff'),
+    color: hex(C.onInverse),
   })
 }
 
 function drawTag(page: PDFPage, text: string, x: number, y: number, ctx: PdfContext) {
   const width = ctx.normalFont.widthOfTextAtSize(text, 12) + 24
-  drawRoundedRect(page, x, y, width, 28, 8, hex('#ffffff'), hex('#e5e7eb'))
+  drawRoundedRect(page, x, y, width, 28, 8, hex(C.surface), hex(C.borderDefault))
   page.drawText(text, {
     x: x + 12,
     y: y + 8,
     size: 12,
     font: ctx.normalFont,
-    color: hex('#374151'),
+    color: hex(C.textSecondary),
   })
 }
 
@@ -241,7 +274,7 @@ function drawCoverPage(page: PDFPage, result: CalculationResult, ctx: PdfContext
   const darkBlockHeight = 408
   const darkBlockY = PAGE_HEIGHT - PAGE_MARGIN - darkBlockHeight
   const coverBlockGap = PAGE_MARGIN
-  drawRoundedRect(page, PAGE_MARGIN, darkBlockY, CONTENT_WIDTH, darkBlockHeight, 18, hex('#111827'))
+  drawRoundedRect(page, PAGE_MARGIN, darkBlockY, CONTENT_WIDTH, darkBlockHeight, 18, hex(C.inverse))
 
   const darkBlockTop = darkBlockY + darkBlockHeight
   const contentLeft = PAGE_MARGIN + 26
@@ -252,14 +285,14 @@ function drawCoverPage(page: PDFPage, result: CalculationResult, ctx: PdfContext
     y: headerY - 18,
     size: 22,
     font: ctx.boldFont,
-    color: hex('#ffffff'),
+    color: hex(C.onInverse),
   })
   page.drawText('X', {
     x: contentLeft + 67,
     y: headerY - 18,
     size: 22,
     font: ctx.boldFont,
-    color: hex('#6b7280'),
+    color: hex(C.mutedOnInverse),
   })
 
   drawPill(page, 'Коммерческое предложение', contentRight - 258, headerY + 2, {
@@ -267,9 +300,9 @@ function drawCoverPage(page: PDFPage, result: CalculationResult, ctx: PdfContext
     height: 30,
     font: ctx.normalFont,
     size: 11,
-    background: hex('#111827'),
-    border: hex('#374151'),
-    color: hex('#6b7280'),
+    background: hex(C.inverse),
+    border: hex(C.inverseBorder),
+    color: hex(C.mutedOnInverse),
   })
 
   const projectTagTop = darkBlockTop - 88
@@ -278,9 +311,9 @@ function drawCoverPage(page: PDFPage, result: CalculationResult, ctx: PdfContext
     height: 32,
     font: ctx.normalFont,
     size: 12,
-    background: hex('#1f2937'),
-    border: hex('#374151'),
-    color: hex('#9ca3af'),
+    background: hex(C.accentSubtleBg),
+    border: hex(C.accentSubtleBorder),
+    color: hex(C.accentSubtleOn),
     radius: 8,
   })
 
@@ -289,7 +322,7 @@ function drawCoverPage(page: PDFPage, result: CalculationResult, ctx: PdfContext
     start: { x: contentLeft, y: separatorY },
     end: { x: contentRight, y: separatorY },
     thickness: 1,
-    color: hex('#374151'),
+    color: hex(C.inverseBorder),
   })
 
   const priceSize = 50
@@ -300,7 +333,7 @@ function drawCoverPage(page: PDFPage, result: CalculationResult, ctx: PdfContext
     y: priceY,
     size: priceSize,
     font: ctx.boldFont,
-    color: hex('#ffffff'),
+    color: hex(C.onInverse),
   })
 
   const rangeText = `${formatPrice(result.minPrice)} — ${formatPrice(result.maxPrice)}`
@@ -310,7 +343,7 @@ function drawCoverPage(page: PDFPage, result: CalculationResult, ctx: PdfContext
     y: rangeY,
     size: 12,
     font: ctx.normalFont,
-    color: hex('#6b7280'),
+    color: hex(C.mutedOnInverse),
   })
 
   const cardHeight = 84
@@ -325,14 +358,14 @@ function drawCoverPage(page: PDFPage, result: CalculationResult, ctx: PdfContext
   const lowerY = PAGE_MARGIN
   const lowerHeight = darkBlockY - lowerY - coverBlockGap
   const lowerTopY = lowerY + lowerHeight
-  drawRoundedRect(page, PAGE_MARGIN, lowerY, CONTENT_WIDTH, lowerHeight, 18, hex('#f9fafb'))
+  drawRoundedRect(page, PAGE_MARGIN, lowerY, CONTENT_WIDTH, lowerHeight, 18, hex(C.pageBg))
 
   page.drawText('СОСТАВ РАБОТ', {
     x: PAGE_MARGIN + 20,
     y: lowerTopY - 30,
     size: 11,
     font: ctx.normalFont,
-    color: hex('#9ca3af'),
+    color: hex(C.textTertiary),
   })
 
   let tagX = PAGE_MARGIN + 20
@@ -353,13 +386,13 @@ function drawCoverPage(page: PDFPage, result: CalculationResult, ctx: PdfContext
     start: { x: PAGE_MARGIN + 20, y: summarySeparatorY },
     end: { x: PAGE_MARGIN + CONTENT_WIDTH - 20, y: summarySeparatorY },
     thickness: 1,
-    color: hex('#e5e7eb'),
+    color: hex(C.borderDefault),
   })
 
   drawWrappedText(page, getKpSummaryText(result), PAGE_MARGIN + 20, summarySeparatorY - 26, CONTENT_WIDTH - 60, {
     font: ctx.normalFont,
     size: 14,
-    color: hex('#4b5563'),
+    color: hex(C.textSecondary),
     lineHeight: 22,
   })
 }
@@ -386,27 +419,27 @@ function addDetailsPage(pdfDoc: PDFDocument, result: CalculationResult, ctx: Pdf
       y: cursorY - 14,
       size: 18,
       font: ctx.boldFont,
-      color: hex('#111827'),
+      color: hex(C.textPrimary),
     })
     page.drawText('X', {
       x: PAGE_MARGIN + 55,
       y: cursorY - 14,
       size: 18,
       font: ctx.boldFont,
-      color: hex('#9ca3af'),
+      color: hex(C.textTertiary),
     })
     page.drawText(pageHeading, {
       x: PAGE_WIDTH - PAGE_MARGIN - ctx.normalFont.widthOfTextAtSize(pageHeading, 11),
       y: cursorY - 10,
       size: 11,
       font: ctx.normalFont,
-      color: hex('#9ca3af'),
+      color: hex(C.textTertiary),
     })
     page.drawLine({
       start: { x: PAGE_MARGIN, y: cursorY - 28 },
       end: { x: PAGE_WIDTH - PAGE_MARGIN, y: cursorY - 28 },
       thickness: 1,
-      color: hex('#e5e7eb'),
+      color: hex(C.borderDefault),
     })
     cursorY -= 52
   }
@@ -422,75 +455,65 @@ function addDetailsPage(pdfDoc: PDFDocument, result: CalculationResult, ctx: Pdf
   drawHeader()
 
   for (const item of result.breakdown) {
-    const explanationText = formatBreakdownExplanation(item.explanation)
-    const explanationLines = splitTextToLines(
-      explanationText,
-      ctx.normalFont,
-      detailCardBodySize,
-      minimumApplied ? CONTENT_WIDTH - 36 : CONTENT_WIDTH - 64 - 110,
-    )
+    const showBreakdownDetails = !minimumApplied
+    const explanationText = showBreakdownDetails ? formatBreakdownExplanation(item.explanation) : ''
+    const explanationLines = showBreakdownDetails
+      ? splitTextToLines(
+          explanationText,
+          ctx.normalFont,
+          detailCardBodySize,
+          CONTENT_WIDTH - 64 - 110,
+        )
+      : []
     const titleBlockHeight = detailCardTitleSize
     const bodyBlockHeight = explanationLines.length * detailCardBodyLineHeight
-    const cardHeight = Math.max(detailCardMinHeight, detailCardPaddingTop + titleBlockHeight + detailCardTitleToBodyGap + bodyBlockHeight + detailCardPaddingBottom)
+    const contentHeight = showBreakdownDetails
+      ? detailCardPaddingTop + titleBlockHeight + detailCardTitleToBodyGap + bodyBlockHeight + detailCardPaddingBottom
+      : detailCardPaddingTop + titleBlockHeight + detailCardPaddingBottom
+    const cardHeight = showBreakdownDetails
+      ? Math.max(detailCardMinHeight, contentHeight)
+      : contentHeight
     ensureSpace(cardHeight + 12)
 
-    drawRoundedRect(page, PAGE_MARGIN, cursorY - cardHeight, CONTENT_WIDTH, cardHeight, 12, hex('#f9fafb'), hex('#e5e7eb'))
+    drawRoundedRect(page, PAGE_MARGIN, cursorY - cardHeight, CONTENT_WIDTH, cardHeight, 12, hex(C.pageBg), hex(C.borderDefault))
     page.drawText(item.label, {
       x: PAGE_MARGIN + 18,
       y: cursorY - detailCardPaddingTop - detailCardTitleSize,
       size: detailCardTitleSize,
       font: ctx.boldFont,
-      color: hex('#111827'),
+      color: hex(C.textPrimary),
     })
-    drawTextLines(page, explanationLines, PAGE_MARGIN + 18, cursorY - detailCardPaddingTop - detailCardTitleSize - detailCardTitleToBodyGap, {
-      font: ctx.normalFont,
-      size: detailCardBodySize,
-      color: hex('#6b7280'),
-      lineHeight: detailCardBodyLineHeight,
-    })
+    if (showBreakdownDetails) {
+      drawTextLines(page, explanationLines, PAGE_MARGIN + 18, cursorY - detailCardPaddingTop - detailCardTitleSize - detailCardTitleToBodyGap, {
+        font: ctx.normalFont,
+        size: detailCardBodySize,
+        color: hex(C.textSecondary),
+        lineHeight: detailCardBodyLineHeight,
+      })
+    }
 
-    if (!minimumApplied) {
+    if (showBreakdownDetails) {
       const amountText = formatPrice(item.amount)
       page.drawText(amountText, {
         x: PAGE_MARGIN + CONTENT_WIDTH - 18 - ctx.boldFont.widthOfTextAtSize(amountText, detailCardTitleSize),
         y: cursorY - detailCardPaddingTop - detailCardTitleSize,
         size: detailCardTitleSize,
         font: ctx.boldFont,
-        color: hex('#111827'),
+        color: hex(C.textPrimary),
       })
     }
 
     cursorY -= cardHeight + 12
   }
 
-  if (minimumApplied && result.breakdown.length < 0) {
-    ensureSpace(76)
-    drawRoundedRect(page, PAGE_MARGIN, cursorY - 64, CONTENT_WIDTH, 64, 12, hex('#f3f4f6'), hex('#e5e7eb'))
-    page.drawText('Применён минимум проекта', {
-      x: PAGE_MARGIN + 18,
-      y: cursorY - 24,
-      size: 12,
-      font: ctx.normalFont,
-      color: hex('#6b7280'),
-    })
-    page.drawText(`Финальная стоимость поднята до ${formatPrice(result.finalPrice)} по минимальному порогу проекта.`, {
-      x: PAGE_MARGIN + 18,
-      y: cursorY - 42,
-      size: 12,
-      font: ctx.normalFont,
-      color: hex('#374151'),
-    })
-    cursorY -= 76
-  }
-
   ensureSpace(totalBlockHeight + 12, 48)
-  drawRoundedRect(page, PAGE_MARGIN, cursorY - totalBlockHeight, CONTENT_WIDTH, totalBlockHeight, 12, hex('#111827'))
+  drawRoundedRect(page, PAGE_MARGIN, cursorY - totalBlockHeight, CONTENT_WIDTH, totalBlockHeight, 12, hex(C.inverse))
   page.drawText('ИТОГО', {
     x: PAGE_MARGIN + 20,
     y: cursorY - 36,
     size: 13,
     font: ctx.boldFont,
-    color: hex('#9ca3af'),
+    color: hex(C.textTertiary),
   })
   const totalText = formatPrice(result.finalPrice)
   page.drawText(totalText, {
@@ -498,7 +521,7 @@ function addDetailsPage(pdfDoc: PDFDocument, result: CalculationResult, ctx: Pdf
     y: cursorY - 38,
     size: 28,
     font: ctx.boldFont,
-    color: hex('#ffffff'),
+    color: hex(C.onInverse),
   })
 
   const footerText = `Сформировано с помощью ScopeX · ${formatDate()}`
@@ -507,7 +530,7 @@ function addDetailsPage(pdfDoc: PDFDocument, result: CalculationResult, ctx: Pdf
     y: PAGE_MARGIN - 2,
     size: 11,
     font: ctx.normalFont,
-    color: hex('#9ca3af'),
+    color: hex(C.textTertiary),
   })
 }
 

@@ -32,14 +32,14 @@ onMounted(() => {
   border-radius: 9999px;
   cursor: pointer;
   flex-shrink: 0;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   transition: background 0.3s, border-color 0.3s;
 }
 
 html.dark .toggle {
-  background: #262626;
-  border-color: #333;
+  background: var(--bg-surface-raised);
+  border-color: var(--border-strong);
 }
 
 .icon {
@@ -48,12 +48,12 @@ html.dark .toggle {
   transform: translateY(-50%);
   pointer-events: none;
   transition: opacity 0.25s;
-  color: #6b7280;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
 }
 
-html.dark .icon { color: #a0a0a0; }
+html.dark .icon { color: var(--text-secondary); }
 
 .icon-sun  { left: 6px;  opacity: 0; }
 .icon-moon { right: 6px; opacity: 1; }
@@ -68,7 +68,7 @@ html.dark .icon-moon { opacity: 0; }
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #111827;
+  background: var(--bg-inverse);
   border: none;
   box-shadow: none;
   transition: transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1) !important;
@@ -76,6 +76,6 @@ html.dark .icon-moon { opacity: 0; }
 }
 
 html.dark .thumb {
-  background: #f0f0f0;
+  background: var(--bg-inverse);
 }
 </style>

@@ -1,17 +1,25 @@
 <template>
-  <div class="bg-gray-50 flex flex-col min-h-screen">
+  <div class="bg-[var(--bg-page)] flex flex-col min-h-screen">
 
     <!-- Хедер -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 h-[60px] flex items-center">
-      <div class="w-full flex justify-between items-center px-[60px]">
-        <NuxtLink to="/" class="text-lg font-semibold text-gray-900">Scope<span class="text-gray-400">X</span></NuxtLink>
+    <header class="fixed top-0 left-0 right-0 z-50 bg-[var(--bg-surface)] border-b border-[var(--border-default)] h-[60px] flex items-center">
+      <div class="w-full flex justify-between items-center px-4 sm:px-6 md:pl-8 md:pr-10 lg:px-12">
+        <NuxtLink to="/" class="text-lg font-semibold text-[var(--text-primary)]">Scope<span class="text-[var(--text-tertiary)]">X</span></NuxtLink>
 
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 sm:gap-3 lg:gap-4">
           <ThemeToggle />
           <a
             href="https://boosty.to/"
             target="_blank"
-            class="hidden md:flex items-center gap-2 bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-600 text-sm font-medium px-4 py-2 rounded-xl transition-all"
+            class="support-cta hidden md:flex lg:hidden items-center gap-2 text-sm font-medium px-3 py-2 rounded-xl"
+          >
+            <Icon name="heart" :size="14" />
+            Поддержать
+          </a>
+          <a
+            href="https://boosty.to/"
+            target="_blank"
+            class="support-cta hidden lg:flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl"
           >
             <Icon name="heart" :size="14" />
             Поддержать проект
@@ -26,14 +34,14 @@
     </main>
 
     <!-- Футер -->
-    <footer class="border-t border-gray-800 bg-gray-900">
-      <div class="w-full px-[60px] py-6 flex items-center justify-between">
-        <span class="text-sm font-semibold text-white">Scope<span class="text-gray-500">X</span></span>
-        <p class="text-xs text-gray-600">Сделано дизайнером для дизайнеров · 2026</p>
+    <footer class="border-t border-[var(--border-default)] bg-[var(--bg-surface)]">
+      <div class="w-full px-4 sm:px-6 lg:px-12 py-6 flex flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
+        <span class="text-sm font-semibold text-[var(--text-primary)]">Scope<span class="text-[var(--text-tertiary)]">X</span></span>
+        <p class="text-xs text-[var(--text-secondary)]">Сделано дизайнером для дизайнеров · 2026</p>
         <a
           href="https://boosty.to/parmenov.dsgn"
           target="_blank"
-          class="text-xs text-gray-400 hover:text-white transition-colors"
+          class="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
         >
           Поддержать проект ↗
         </a>

@@ -1,11 +1,13 @@
 <template>
-  <div class="grid grid-cols-3 gap-2">
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
     <button
       v-for="type in types"
       :key="type.value"
       type="button"
-      class="py-2 px-2 rounded-xl border text-xs font-medium transition-all duration-150"
-      :class="modelValue === type.value ? 'sec-active' : 'sec-idle'"
+      class="min-h-[48px] px-2 py-2 rounded-xl border text-xs font-medium transition-all duration-150 flex items-center justify-center text-center leading-snug"
+      :class="modelValue === type.value
+        ? 'bg-[var(--accent-subtle-bg)] border-[var(--accent-subtle-border)] text-[var(--accent-subtle-on)] font-medium'
+        : 'bg-[var(--bg-surface)] border-[var(--border-default)] text-[var(--text-secondary)] hover:bg-[var(--bg-surface-raised)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]'"
       @click="$emit('update:modelValue', type.value)"
     >
       {{ type.label }}

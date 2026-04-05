@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-3">
-    <div class="flex justify-between items-baseline">
-      <span class="text-sm text-gray-600">Количество экранов</span>
-      <div class="flex items-baseline gap-1">
-        <span class="text-3xl font-semibold text-gray-900">{{ modelValue }}</span>
-        <span class="text-sm text-gray-400">/ 50</span>
+    <div class="flex items-end justify-between gap-4">
+      <span class="text-sm text-[var(--text-secondary)]">Количество экранов</span>
+      <div class="flex items-baseline gap-1 flex-shrink-0">
+        <span class="text-3xl font-semibold text-[var(--text-primary)]">{{ modelValue }}</span>
+        <span class="text-sm text-[var(--text-tertiary)]">/ 50</span>
       </div>
     </div>
     <div class="slider-track-wrap">
@@ -14,6 +14,7 @@
         max="50"
         :value="modelValue"
         class="scope-slider"
+        :style="{ accentColor: 'var(--accent-bg)' }"
         @input="$emit('update:modelValue', +($event.target as HTMLInputElement).value)"
       >
     </div>
@@ -39,14 +40,14 @@ defineEmits<{ 'update:modelValue': [value: number] }>()
   width: 100%;
   height: 4px;
   border-radius: 9999px;
-  background: #e5e7eb;
+  background: var(--border-default);
   outline: none;
   cursor: pointer;
   transition: background 0.2s;
 }
 
 html.dark .scope-slider {
-  background: #333;
+  background: var(--border-strong);
 }
 
 /* Thumb — webkit */
@@ -56,8 +57,8 @@ html.dark .scope-slider {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #111827;
-  border: 2px solid #ffffff;
+  background: var(--accent-bg);
+  border: 2px solid var(--bg-surface);
   box-shadow: 0 1px 4px rgba(0,0,0,0.18);
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
@@ -73,20 +74,10 @@ html.dark .scope-slider {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #111827;
-  border: 2px solid #ffffff;
+  background: var(--accent-bg);
+  border: 2px solid var(--bg-surface);
   box-shadow: 0 1px 4px rgba(0,0,0,0.18);
   cursor: pointer;
   transition: transform 0.15s;
-}
-
-html.dark .scope-slider::-webkit-slider-thumb {
-  background: #f0f0f0;
-  border-color: #1e1e1e;
-}
-
-html.dark .scope-slider::-moz-range-thumb {
-  background: #f0f0f0;
-  border-color: #1e1e1e;
 }
 </style>
