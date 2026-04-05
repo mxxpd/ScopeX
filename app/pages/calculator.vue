@@ -8,17 +8,20 @@
         title-class="text-2xl font-semibold text-[var(--text-primary)] sm:text-3xl"
       />
 
+      <ResumeSessionBanner
+        v-if="showBanner && lastSession.stored.value"
+        :session="lastSession.stored.value"
+        :on-resume="resumeSession"
+        :on-dismiss="dismissSession"
+      />
+
       <SegmentedControl v-model="mode" :items="modes" />
 
       <div class="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_27rem] xl:gap-8">
         <div class="section-stack">
           <section v-if="mode === 'market'" class="surface-card-subtle">
-            <div>
-              <p class="eyebrow-label">Ваш грейд</p>
-              <h3 class="mt-2 text-lg font-semibold text-[var(--text-primary)]">Переключайте грейд и смотрите, как меняется цена</h3>
-            </div>
-
-            <div class="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <p class="eyebrow-label">Ваш грейд</p>
+            <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
               <button
                 v-for="g in grades"
                 :key="g.value"
@@ -33,6 +36,9 @@
                 />
               </button>
             </div>
+            <p class="mt-3 text-xs leading-relaxed text-[var(--text-tertiary)]">
+              Выберите рыночный ориентир, а состав работ и буфер ниже сформируют итоговую оценку.
+            </p>
           </section>
 
           <section v-else-if="mode === 'own-rate'" class="surface-card-subtle">
@@ -95,34 +101,22 @@
             </p>
           </section>
 
-          <section v-if="mode === 'self-check'" class="space-y-4">
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <p class="text-xs font-medium uppercase tracking-[0.18em] text-[var(--text-tertiary)]">Параметры расчёта</p>
-                <h2 class="mt-2 text-xl font-semibold text-[var(--text-primary)]">
-                  {{ mode === 'self-check' ? 'Введите данные проекта' : 'Уточните ставку и условия' }}
-                </h2>
-              </div>
+          <section v-if="mode === 'self-check'" class="surface-card">
+            <p class="eyebrow-label">Параметры расчёта</p>
+
+            <div class="mt-4">
+              <p class="mb-2 text-sm font-medium text-[var(--text-primary)]">Тип проекта</p>
+              <ProjectTypeSelect v-model="projectType" />
             </div>
 
-            <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)]">
-              <div class="surface-card-subtle">
-                <p class="eyebrow-label">Тип проекта</p>
-                <div class="mt-4">
-                  <ProjectTypeSelect v-model="projectType" />
-                </div>
+            <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <p class="mb-3 text-sm font-medium text-[var(--text-primary)]">Объём</p>
+                <ScopeSlider v-model="scopeValue" />
               </div>
-
-              <div class="surface-card-subtle">
-                <p class="eyebrow-label">Объём</p>
-                <div class="mt-4">
-                  <ScopeSlider v-model="scopeValue" />
-                </div>
-              </div>
-
-              <div class="surface-card-subtle">
-                <p class="eyebrow-label">Сумма клиента</p>
-                <div class="mt-4 flex items-center gap-3">
+              <div>
+                <p class="mb-3 text-sm font-medium text-[var(--text-primary)]">Сумма клиента</p>
+                <div class="flex items-center gap-3">
                   <input
                     v-model.number="quotedPrice"
                     type="number"
@@ -157,8 +151,10 @@
 </template>
 
 <script setup lang="ts">
-import { useLocalStorage } from '@vueuse/core'
+import { useLocalStorage, watchDebounced } from '@vueuse/core'
 import { useCalculatorStore } from '~/stores/calculator'
+import { useLastSession } from '~/composables/useLastSession'
+import type { LastSession } from '~/composables/useLastSession'
 import { BENCHMARK_SUMMARY, GRADE_RATES, getGradeRateLabel } from '~/utils/benchmarks'
 import {
   calculateMarketResult,
@@ -317,6 +313,81 @@ const previewPlaceholder = computed(() => {
   }
   return 'Введите проект, объём и сумму клиента. После этого справа появится быстрый рыночный ориентир.'
 })
+
+// --- Session save/restore ---
+
+const lastSession = useLastSession()
+const showBanner = ref(false)
+
+onMounted(() => {
+  if (lastSession.hasValidSession.value && services.value.selectedIds.length === 0) {
+    showBanner.value = true
+  }
+})
+
+function resumeSession() {
+  const s = lastSession.stored.value
+  if (!s) return
+  mode.value = s.mode
+  if (s.formData.level) grade.value = s.formData.level
+  if (s.formData.hourlyRate) hourlyRate.value = s.formData.hourlyRate
+  if (s.formData.myQuote) quotedPrice.value = s.formData.myQuote
+  buffer.value = s.formData.buffer
+  services.value = {
+    selectedIds: s.formData.selectedServices,
+    screensCount: s.formData.screens,
+    revisionsCount: s.formData.rounds,
+  }
+  showBanner.value = false
+}
+
+function dismissSession() {
+  lastSession.clear()
+  showBanner.value = false
+}
+
+function buildSession(): LastSession | null {
+  const base = {
+    savedAt: new Date().toISOString(),
+    mode: mode.value,
+    formData: {
+      level: grade.value,
+      hourlyRate: hourlyRate.value,
+      myQuote: quotedPrice.value,
+      screens: services.value.screensCount,
+      rounds: services.value.revisionsCount,
+      buffer: buffer.value,
+      selectedServices: [...services.value.selectedIds],
+    },
+  }
+  if (mode.value === 'market' && marketPreviewResult.value) {
+    const r = marketPreviewResult.value
+    const gp = getSelectedGradePrice(r)
+    return { ...base, result: { totalPrice: gp.mid, totalHours: r.adjustedHours, pricePosition: 'market' } }
+  }
+  if (mode.value === 'own-rate' && ownRatePreviewResult.value) {
+    const r = ownRatePreviewResult.value
+    const seniorMax = GRADE_RATES.senior.max * r.adjustedHours
+    const juniorMid = ((GRADE_RATES.junior.min + GRADE_RATES.junior.max) / 2) * r.adjustedHours
+    const pricePosition = r.price > seniorMax * 1.1 ? 'above' : r.price < juniorMid * 0.9 ? 'below' : 'market'
+    return { ...base, result: { totalPrice: r.price, totalHours: r.adjustedHours, pricePosition } }
+  }
+  if (mode.value === 'self-check' && selfCheckPreviewResult.value) {
+    const r = selfCheckPreviewResult.value
+    const pricePosition = r.marketPosition === 'in' ? 'market' : r.marketPosition
+    return { ...base, result: { totalPrice: r.quotedPrice, totalHours: 0, pricePosition } }
+  }
+  return null
+}
+
+watchDebounced(
+  [mode, grade, hourlyRate, quotedPrice, projectType, scopeValue, services, buffer],
+  () => {
+    const session = buildSession()
+    if (session) lastSession.save(session)
+  },
+  { debounce: 500, deep: true },
+)
 
 function onSubmit() {
   if (mode.value === 'market') {

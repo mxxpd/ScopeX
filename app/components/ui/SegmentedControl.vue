@@ -18,7 +18,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
 
-const panelClass = computed(() => props.compact ? 'p-0 border-0 bg-transparent max-w-none' : '')
+const panelClass = computed(() => props.compact ? 'max-w-none w-fit' : '')
 const gridClass = computed(() => props.fullWidth ? '' : 'flex-wrap')
 const chipClass = computed(() => props.compact ? '!flex-none px-4' : '')
 

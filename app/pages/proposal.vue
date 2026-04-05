@@ -102,7 +102,9 @@ const proposalModes: { value: ProposalMode; label: string }[] = [
   { value: 'extended', label: 'С обоснованием' },
 ]
 
-const proposalMode = ref<ProposalMode>('short')
+const route = useRoute()
+const initialFormat = route.query.format === 'extended' ? 'extended' : route.query.format === 'standard' ? 'standard' : 'short'
+const proposalMode = ref<ProposalMode>(initialFormat)
 const proposalCopied = ref(false)
 
 const proposalText = computed(() => (

@@ -50,6 +50,12 @@
               </div>
             </section>
 
+            <PricePositionHint
+              v-if="modeResult.mode === 'own-rate'"
+              :position="pricePosition"
+              :market-mid="pricePositionMarketMid"
+            />
+
             <section v-if="modeResult.mode === 'market'" class="grid gap-3 sm:grid-cols-3">
               <SelectableCard
                 v-for="g in gradeCards"
@@ -135,6 +141,12 @@
                 </div>
               </div>
             </section>
+
+            <SelfCheckAdvice
+              :position="selfCheckPosition"
+              :market-mid="modeResult.market.mid"
+              :quoted-price="modeResult.quotedPrice"
+            />
           </div>
 
           <aside class="sticky-sidebar">
@@ -164,7 +176,7 @@
 </template>
 
 <script setup lang="ts">
-import { BENCHMARK_SUMMARY, MARKET_BENCHMARK_SOURCES, getGradeRateLabel } from '~/utils/benchmarks'
+import { BENCHMARK_SUMMARY, GRADE_RATES, MARKET_BENCHMARK_SOURCES, getGradeRateLabel } from '~/utils/benchmarks'
 import { getOwnRateFeedback, getSelfCheckFeedback } from '~/utils/market-feedback'
 import { formatPrice } from '~/utils/pricing'
 
@@ -295,5 +307,30 @@ const selfCheckActiveGrade = computed(() => {
   if (quotedPrice <= allGrades.junior.max) return 'junior'
   if (quotedPrice <= allGrades.middle.max) return 'middle'
   return 'senior'
+})
+
+const selfCheckPosition = computed((): 'below' | 'market' | 'above' => {
+  if (modeResult.value?.mode !== 'self-check') return 'market'
+  const { quotedPrice, allGrades } = modeResult.value
+  const juniorMid = allGrades.junior.mid
+  const seniorMax = allGrades.senior.max
+  if (quotedPrice > seniorMax * 1.1) return 'above'
+  if (quotedPrice < juniorMid * 0.8) return 'below'
+  return 'market'
+})
+
+const pricePosition = computed((): 'below' | 'market' | 'above' => {
+  if (modeResult.value?.mode !== 'own-rate') return 'market'
+  const { price, adjustedHours } = modeResult.value
+  const seniorMax = GRADE_RATES.senior.max * adjustedHours
+  const juniorMid = ((GRADE_RATES.junior.min + GRADE_RATES.junior.max) / 2) * adjustedHours
+  if (price > seniorMax * 1.1) return 'above'
+  if (price < juniorMid * 0.9) return 'below'
+  return 'market'
+})
+
+const pricePositionMarketMid = computed(() => {
+  if (modeResult.value?.mode !== 'own-rate') return 0
+  return modeResult.value.market.mid
 })
 </script>
