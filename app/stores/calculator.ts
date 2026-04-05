@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { FormData } from '~/types'
+import type { FormData, ModeResult } from '~/types'
 import {
   calculateCalculatorState,
   clearCalculatorState,
@@ -10,6 +10,9 @@ export const useCalculatorStore = defineStore('calculator', () => {
   const session = useCalculatorSession()
   const formData = session.formData
   const result = session.result
+
+  // Mode-specific state (in-memory only; mode selection persists via localStorage in the page)
+  const modeResult = ref<ModeResult | null>(null)
 
   function setForm(data: FormData) {
     const nextState = setCalculatorForm({
@@ -31,11 +34,18 @@ export const useCalculatorStore = defineStore('calculator', () => {
     session.persistResult(nextState.result)
   }
 
+  function setModeResult(data: ModeResult) {
+    modeResult.value = data
+    // Clear old-style result so middleware routes to new mode view
+    session.persistResult(null)
+  }
+
   function reset() {
     const emptyState = clearCalculatorState()
     session.persistForm(emptyState.formData)
     session.persistResult(emptyState.result)
+    modeResult.value = null
   }
 
-  return { formData, result, setForm, calculate, reset }
+  return { formData, result, modeResult, setForm, calculate, setModeResult, reset }
 })

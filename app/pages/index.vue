@@ -81,19 +81,19 @@
 
           <div class="space-y-3 mb-8 sm:mb-10">
             <div class="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
-              <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center self-start rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-[var(--text-secondary)]">
+              <span class="feature-icon-badge">
                 <Icon name="bill-list" :size="18" />
               </span>
               <span>Цена за пару минут, вместо «подумаю, напишу»</span>
             </div>
             <div class="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
-              <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center self-start rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-[var(--text-secondary)]">
+              <span class="feature-icon-badge">
                 <Icon name="text" :size="18" />
               </span>
               <span>Три варианта текста: коротко, деловой, с продажей</span>
             </div>
             <div class="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
-              <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center self-start rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-[var(--text-secondary)]">
+              <span class="feature-icon-badge">
                 <Icon name="variants" :size="18" />
               </span>
               <span>Разбивка по позициям — клиент видит за что платит</span>
