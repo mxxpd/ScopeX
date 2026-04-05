@@ -1,41 +1,19 @@
 import { defineStore } from 'pinia'
-import type { FormData } from '~/types'
-import {
-  calculateCalculatorState,
-  clearCalculatorState,
-  setCalculatorForm,
-} from '~/utils/calculator-state'
+import type { ModeResult } from '~/types'
 
 export const useCalculatorStore = defineStore('calculator', () => {
-  const session = useCalculatorSession()
-  const formData = session.formData
-  const result = session.result
+  const modeResult = useCookie<ModeResult | null>('scopex-mode-result', {
+    default: () => null,
+    sameSite: 'lax',
+  })
 
-  function setForm(data: FormData) {
-    const nextState = setCalculatorForm({
-      formData: formData.value,
-      result: result.value,
-    }, data)
-
-    session.persistForm(nextState.formData)
-    session.persistResult(nextState.result)
-  }
-
-  function calculate() {
-    const nextState = calculateCalculatorState({
-      formData: formData.value,
-      result: result.value,
-    })
-
-    session.persistForm(nextState.formData)
-    session.persistResult(nextState.result)
+  function setModeResult(data: ModeResult) {
+    modeResult.value = data
   }
 
   function reset() {
-    const emptyState = clearCalculatorState()
-    session.persistForm(emptyState.formData)
-    session.persistResult(emptyState.result)
+    modeResult.value = null
   }
 
-  return { formData, result, setForm, calculate, reset }
+  return { modeResult, setModeResult, reset }
 })
